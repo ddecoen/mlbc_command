@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLBC Command — Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+:root{--bg:#0a0c10;--surface:#111318;--surface2:#181c24;--border:#252a35;--accent:#e8a020;--accent2:#4a9eff;--accent3:#2ecc71;--danger:#e85040;--text:#d4d8e0;--muted:#5a6070;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;}
+.header{background:linear-gradient(135deg,#0d1117,#111820);border-bottom:2px solid var(--accent);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.header-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px;color:var(--accent);}
+.header-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;}
+.header-right{display:flex;gap:16px;}
+.btn-view{display:inline-flex;align-items:center;gap:8px;background:var(--accent2);color:#000;padding:8px 18px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:1px;text-decoration:none;transition:opacity 0.2s;}
+.btn-view:hover{opacity:0.85;}
+.main{max-width:1000px;margin:0 auto;padding:40px 24px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--accent);margin-bottom:20px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;margin-bottom:28px;}
+.section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center;margin-bottom:16px;}
+.form-label{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:1px;}
+input[type=number],input[type=text]{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 14px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;width:100%;outline:none;}
+input:focus{border-color:var(--accent2);}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:20px 0;}
+.file-drop{background:var(--surface2);border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.file-drop:hover,.file-drop.has-file{border-color:var(--accent2);background:#13181f;}
+.file-drop.has-file{border-style:solid;border-color:var(--accent3);}
+.file-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.file-name{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);margin-bottom:4px;}
+.file-status{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text);}
+.file-drop.has-file .file-status{color:var(--accent3);}
+.btn-build{width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:16px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-build:hover{background:#f0b429;}
+.btn-build:disabled{opacity:0.4;cursor:default;}
+.progress{display:none;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;margin-top:16px;}
+.progress-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin:12px 0;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent3));border-radius:4px;width:0%;transition:width 0.4s;}
+.progress-log{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.8;max-height:120px;overflow-y:auto;}
+.success-box{background:rgba(46,204,113,0.1);border:1px solid rgba(46,204,113,0.3);border-radius:8px;padding:20px;margin-top:16px;display:none;}
+.error-box{background:rgba(232,80,64,0.1);border:1px solid rgba(232,80,64,0.3);border-radius:8px;padding:20px;margin-top:16px;display:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#f87171;}
+.seasons-list{display:flex;flex-direction:column;gap:10px;}
+.season-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;}
+.season-info{font-family:'IBM Plex Mono',monospace;font-size:13px;}
+.season-year{color:var(--accent);font-size:18px;font-weight:600;margin-right:16px;}
+.season-meta{color:var(--muted);font-size:11px;}
+.btn-activate{background:transparent;border:1px solid var(--accent2);color:var(--accent2);padding:6px 14px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+.btn-activate:hover{background:var(--accent2);color:#000;}
+.btn-activate.active{background:var(--accent3);color:#000;border-color:var(--accent3);pointer-events:none;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="header-logo">MLBC COMMAND</div>
+    <div class="header-sub">Local Build Server</div>
+  </div>
+  <div class="header-right">
+    <a href="/dashboard" class="btn-view" target="_blank">&#9654; Open Dashboard</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="section">
+    <div class="section-title">Import New Season</div>
+    <div class="form-row">
+      <div class="form-label">Season Year</div>
+      <input type="number" id="season-input" value="{{ seasons[0]|int + 1 if seasons else 2143 }}" min="2100" max="2300" style="width:160px;">
+    </div>
+    <div class="form-row">
+      <div class="form-label">HHRecord CSVs</div>
+      <div style="color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;">Upload all 8 files exported from HHRecord</div>
+    </div>
+    <div class="file-grid" id="file-grid">
+      {% for csv in required_csvs %}
+      <div class="file-drop" id="drop-{{ csv }}" onclick="document.getElementById('file-{{ csv }}').click()">
+        <input type="file" id="file-{{ csv }}" accept=".csv" data-name="{{ csv }}" onchange="onFileChange(this)">
+        <div class="file-name">{{ csv }}</div>
+        <div class="file-status" id="status-{{ csv }}">Click to select</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:16px;" id="file-count">0 / {{ required_csvs|length }} files selected</div>
+    <button class="btn-build" id="btn-build" onclick="runBuild()" disabled>&#9654; PROCESS &amp; BUILD DASHBOARD</button>
+    <div class="progress" id="progress-box">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);margin-bottom:8px;" id="progress-label">Processing...</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar"></div></div>
+      <div class="progress-log" id="progress-log"></div>
+    </div>
+    <div class="success-box" id="success-box">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#2ecc71;letter-spacing:2px;margin-bottom:8px;">&#10003; BUILD COMPLETE</div>
+      <div id="success-meta" style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text);line-height:1.8;"></div>
+      <a href="/dashboard" target="_blank" style="display:inline-block;margin-top:12px;background:var(--accent3);color:#000;padding:8px 20px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;text-decoration:none;">Open Dashboard &#8594;</a>
+    </div>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Season History</div>
+    {% if seasons %}
+    <div class="seasons-list" id="seasons-list">
+      {% for s in seasons %}
+      <div class="season-row">
+        <div class="season-info">
+          <span class="season-year">{{ s }}</span>
+          <span class="season-meta" id="meta-{{ s }}">loading...</span>
+        </div>
+        <button class="btn-activate {% if loop.first %}active{% endif %}" onclick="activateSeason({{ s }}, this)" id="btn-{{ s }}">
+          {% if loop.first %}ACTIVE{% else %}SET ACTIVE{% endif %}
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);">No seasons imported yet.</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+const REQUIRED = {{ required_csvs | tojson }};
+const selectedFiles = {};
+
+function onFileChange(input) {
+  const name = input.dataset.name;
+  if (input.files[0]) {
+    selectedFiles[name] = input.files[0];
+    document.getElementById('drop-' + name).classList.add('has-file');
+    document.getElementById('status-' + name).textContent = input.files[0].name.length > 22
+      ? input.files[0].name.slice(0,20) + '...' : input.files[0].name;
+  }
+  const count = Object.keys(selectedFiles).length;
+  document.getElementById('file-count').textContent = count + ' / ' + REQUIRED.length + ' files selected';
+  document.getElementById('btn-build').disabled = count < REQUIRED.length;
+}
+
+function log(msg) {
+  const el = document.getElementById('progress-log');
+  el.textContent += '\n' + msg;
+  el.scrollTop = el.scrollHeight;
+}
+
+function setProgress(pct) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+async function runBuild() {
+  const season = parseInt(document.getElementById('season-input').value);
+  if (!season || season < 2100) { alert('Enter a valid season year'); return; }
+
+  document.getElementById('btn-build').disabled = true;
+  document.getElementById('progress-box').style.display = 'block';
+  document.getElementById('success-box').style.display = 'none';
+  document.getElementById('error-box').style.display = 'none';
+  document.getElementById('progress-log').textContent = '';
+  document.getElementById('progress-label').textContent = 'Uploading & processing season ' + season + '...';
+  setProgress(10);
+
+  const fd = new FormData();
+  fd.append('season', season);
+  for (const [name, file] of Object.entries(selectedFiles)) {
+    fd.append(name, file);
+  }
+
+  log('Uploading ' + Object.keys(selectedFiles).length + ' CSV files...');
+  setProgress(25);
+
+  try {
+    const resp = await fetch('/api/upload', { method: 'POST', body: fd });
+    setProgress(80);
+    const data = await resp.json();
+
+    if (data.error) {
+      document.getElementById('error-box').style.display = 'block';
+      document.getElementById('error-box').textContent = 'Error: ' + data.error + (data.trace ? '\n\n' + data.trace : '');
+    } else {
+      setProgress(100);
+      document.getElementById('progress-label').textContent = 'Done!';
+      log('Processing complete.');
+      log('Hitters: ' + data.meta.hitters + ' | Pitchers: ' + data.meta.pitchers + ' | Prospects: ' + data.meta.prospects);
+      log('Rebuilding dashboard...');
+      log('Build complete. index.html updated.');
+
+      document.getElementById('success-box').style.display = 'block';
+      document.getElementById('success-meta').innerHTML =
+        'Season ' + data.season + ' imported successfully.<br>' +
+        data.meta.hitters + ' hitters &nbsp;|&nbsp; ' +
+        data.meta.pitchers + ' pitchers &nbsp;|&nbsp; ' +
+        data.meta.prospects + ' prospects &nbsp;|&nbsp; ' +
+        data.meta.parks + ' parks';
+
+      // Reload season list
+      setTimeout(() => location.reload(), 2000);
+    }
+  } catch (e) {
+    document.getElementById('error-box').style.display = 'block';
+    document.getElementById('error-box').textContent = 'Network error: ' + e.message;
+  }
+
+  document.getElementById('btn-build').disabled = false;
+}
+
+async function activateSeason(season, btn) {
+  const resp = await fetch('/api/set-active/' + season, { method: 'POST' });
+  const data = await resp.json();
+  if (data.success) {
+    document.querySelectorAll('.btn-activate').forEach(function(b) {
+      b.textContent = 'SET ACTIVE';
+      b.classList.remove('active');
+    });
+    btn.textContent = 'ACTIVE';
+    btn.classList.add('active');
+  }
+}
+
+// Load season metadata
+async function loadMeta() {
+  const resp = await fetch('/api/seasons');
+  const seasons = await resp.json();
+  seasons.forEach(function(s) {
+    const el = document.getElementById('meta-' + s.season);
+    if (el && s.meta) {
+      el.textContent = (s.meta.hitters||'?') + ' hitters · ' + (s.meta.pitchers||'?') + ' pitchers · ' + (s.meta.prospects||'?') + ' prospects';
+    }
+  });
+}
+loadMeta();
+</script>
+</body>
+</html>
